@@ -1,0 +1,39 @@
+CREATE VERTEX Team(PRIMARY_ID franchiseID STRING, teamCode STRING, leagueCode STRING, divisionCode STRING, teamLocation STRING, teamName STRING, teamAltNickname STRING, teamStartDate DATETIME, teamEndDate DATETIME, franchiseCity STRING, franchiseState STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX GameDetails(PRIMARY_ID gameID STRING, gameDate DATETIME, dayOfWeek STRING, awayTeamCode STRING, awayTeamLeagueCode STRING, awayTeamGameNbr INT, homeTeamCode STRING, homeTeamLeagueCode STRING, homeTeamGameNbr INT, visitingTeamRuns INT, homeTeamRuns INT, lengthInOuts INT, dayNightIndicator STRING, parkID STRING, attendance INT, lengthInMinutes INT, awayLineScore STRING, homeLineScore STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Player(PRIMARY_ID playerID STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX LeagueLU(PRIMARY_ID leagueCode STRING, leagueName STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX HitLocation(PRIMARY_ID hitLocID STRING, hitLocationDescription STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Ballpark(PRIMARY_ID parkID STRING, parkName STRING, parkNickname STRING, parkCity STRING, parkState STRING, parkStartDate DATETIME, parkEndDate DATETIME, parkLeagueCode STRING, notes STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX HitType(PRIMARY_ID hitTypeCode STRING, hitTypeName STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Play(PRIMARY_ID pbpID STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX DoubleheaderLU(PRIMARY_ID dblheaderCode STRING, dblheaderDescription STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX ForefeitLU(PRIMARY_ID forfeitCode STRING, forfeitDescription STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX ProtestLU(PRIMARY_ID protestCode STRING, protestDescription STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX OffensiveStats(PRIMARY_ID gameID STRING, awayAtBats INT, awayHits INT, awayDoubles INT, awayTriples INT, awayHomeruns INT, awayRunsBattedIn INT, awaySacrificeHits INT, awaySacrificeFlies INT, awayHitByPitch INT, awayWalks INT, awayIntentionalWalks INT, awayStrikeouts INT, awayStolenBases INT, awayCaughtStealing INT, awayGroundedIntoDoublePlay INT, awayOnBaseByCatcherInterference INT, awayLeftOnBase INT, homeAtBats INT, homeHits INT, homeDoubles INT, homeTriples INT, homeHomeruns INT, homeRunsBattedIn INT, homeSacrificeHits INT, homeSacrificeFlies INT, homeHitByPitch INT, homeWalks INT, homeIntentionalWalks INT, homeStrikeouts INT, homeStolenBases INT, homeCaughtStealing INT, homeGroundedIntoDoublePlay INT, homeOnBaseByCatcherInterference INT, homeLeftOnBase INT) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX PitchingStats(PRIMARY_ID gameID STRING, awayPitchersUsed INT, awayIndividualEarnedRuns INT, awayTeamEarnedRuns INT, awayWildPitches INT, awayBalks INT, homePitchersUsed INT, homeIndividualEarnedRuns INT, homeTeamEarnedRuns INT, homeWildPitches INT, homeBalks INT) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX DefenseStats(PRIMARY_ID gameID STRING, awayPutouts INT, awayAssists INT, awayErrors INT, awayPassedBalls INT, awayDoublePlays INT, awayTriplePlays INT, homePutouts INT, homeAssists INT, homeErrors INT, homePassedBalls INT, homeDoublePlays INT, homeTriplePlays INT) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Umpire(PRIMARY_ID umpireID STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Manager(PRIMARY_ID managerID STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE UNDIRECTED EDGE team_in_league(FROM Team, TO LeagueLU)
+CREATE UNDIRECTED EDGE player_on_team(FROM Player, TO Team)
+CREATE UNDIRECTED EDGE game_boxscorestat_players(FROM Player, TO GameDetails, winningPitcherPlayerID STRING, losingPitcherPlayerID STRING, savingPitcherPlayerID STRING, gameWinningRBIPlayerID STRING)
+CREATE UNDIRECTED EDGE game_has_ballpark(FROM GameDetails, TO Ballpark)
+CREATE UNDIRECTED EDGE game_has_playbyplay(FROM GameDetails, TO Play)
+CREATE UNDIRECTED EDGE player_has_hitlocation(FROM Player, TO HitLocation)
+CREATE UNDIRECTED EDGE play_has_hitlocation(FROM Play, TO HitLocation)
+CREATE UNDIRECTED EDGE player_has_hittype(FROM Player, TO HitType)
+CREATE UNDIRECTED EDGE play_has_hittype(FROM Play, TO HitType)
+CREATE UNDIRECTED EDGE ballpark_in_league(FROM Ballpark, TO LeagueLU)
+CREATE UNDIRECTED EDGE game_has_doubleheader(FROM GameDetails, TO DoubleheaderLU)
+CREATE UNDIRECTED EDGE game_has_forfeit(FROM GameDetails, TO ForefeitLU)
+CREATE UNDIRECTED EDGE game_has_protest(FROM GameDetails, TO ProtestLU)
+CREATE UNDIRECTED EDGE game_has_pitchingstats(FROM GameDetails, TO PitchingStats)
+CREATE UNDIRECTED EDGE game_has_defensestats(FROM GameDetails, TO DefenseStats)
+CREATE UNDIRECTED EDGE game_has_umpire(FROM GameDetails, TO Umpire, homePlateUmpireID STRING, firstBaseUmpireID STRING, secondBaseUmpireID STRING, thirdBaseUmpireID STRING, leftFieldUmpireID STRING, rightFieldUmpireID STRING)
+CREATE UNDIRECTED EDGE game_has_manager(FROM GameDetails, TO Manager, awayManagerID STRING, homeManagerID STRING)
+CREATE UNDIRECTED EDGE game_starting_players(FROM GameDetails, TO Player, startingPitcherPlayerID STRING, firstBatterPlayerID STRING, firstBatterDefensivePosition STRING, secondBatterPlayerID STRING, secondBatterDefensivePosition STRING, thirdBatterPlayerID STRING, thirdBatterDefensivePosition STRING, fourthBatterPlayerID STRING, fourthBatterDefensivePosition STRING)
+CREATE UNDIRECTED EDGE home_team_in_game(FROM GameDetails, TO Team)
+CREATE UNDIRECTED EDGE away_team_in_game(FROM GameDetails, TO Team)
+CREATE UNDIRECTED EDGE away_offensive_stats(FROM GameDetails, TO OffensiveStats)
+CREATE UNDIRECTED EDGE home_offensive_stats(FROM GameDetails, TO OffensiveStats)
+CREATE GRAPH MLBTG(Team:v, GameDetails:v, Player:v, LeagueLU:v, HitLocation:v, Ballpark:v, HitType:v, Play:v, DoubleheaderLU:v, ForefeitLU:v, ProtestLU:v, OffensiveStats:v, PitchingStats:v, DefenseStats:v, Umpire:v, Manager:v, team_in_league:e, player_on_team:e, game_boxscorestat_players:e, game_has_ballpark:e, game_has_playbyplay:e, player_has_hitlocation:e, play_has_hitlocation:e, player_has_hittype:e, play_has_hittype:e, ballpark_in_league:e, game_has_doubleheader:e, game_has_forfeit:e, game_has_protest:e, game_has_pitchingstats:e, game_has_defensestats:e, game_has_umpire:e, game_has_manager:e, game_starting_players:e, home_team_in_game:e, away_team_in_game:e, away_offensive_stats:e, home_offensive_stats:e)
